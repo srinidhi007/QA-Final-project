@@ -6,37 +6,28 @@ trigger:
 variables:
   # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: '97f0030f-acb4-493d-9d89-534a7c4ce538'
-
-  # Web app name
-  #webAppName: 'flask-ml-azure-sri'
-
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
-
   # Environment name
   environmentName: 'test'
-
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
-
   # Python version: 3.7
   pythonVersion: '3.7'
+
 stages:
+#--------------------------------------------#  
+# BUILD STAGE
+#--------------------------------------------#    
 - stage: Build
   jobs:
-  - job: Build
-    pool:
-      vmImage: $(vmImageName)
+  - job: BuildInfrastructure
     steps:
-    - task: CmdLine@2
-      displayName: Install newman Runner
+    #--------------------------------------------#  
+    # Use Terraform to create the Infrastructure      
+    # Install Terraform on the pipeline agent 
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+      displayName: 'Terrafom installation'
       inputs:
-        script: 'sudo npm install -g newman'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
-    - task: CmdLine@2
-      displayName: Run Newman Tests
-      continueOnError: true
-      inputs:
-        script: 'newman run StarterAPI.json'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        terraformVersion: '1.2.9'
     
