@@ -26,7 +26,9 @@ module "network" {
   application_type     = "${var.application_type}"
   resource_type        = "NET"
   resource_group       = "${module.resource_group.resource_group_name}"
-  address_prefix_test  = "${var.address_prefix_test}"
+  address_prefix_test  = ["10.5.1.0/24"]
+  // Check if address_prefix_test is a string or a list of strings
+  #address_prefix_test  = can(var.address_prefix_test) ? [var.address_prefix_test] : var.address_prefix_test
 }
 
 module "nsg-test" {
@@ -36,7 +38,7 @@ module "nsg-test" {
   resource_type    = "NSG"
   resource_group   = "${module.resource_group.resource_group_name}"
   subnet_id        = "${module.network.subnet_id_test}"
-  address_prefix_test = "${var.address_prefix_test}"
+  address_prefix_test = "10.5.1.0/24"
 }
 module "appservice" {
   source           = "../../modules/appservice"
