@@ -1,55 +1,81 @@
-# #!/usr/bin/env python
-
+import logging 
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+import time
 
-def login(driver, username, password):
-    print(f"Logging in as '{username}'")
+timestamp = time.strftime('%b-%d-%Y_%H%M')
+output_file = "uitest_"+timestamp+".log"
+
+logger = logging.getLogger('')
+file_handler = logging.FileHandler(filename=output_file)
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+file_handler.setFormatter(formatter)
+stdout_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+logger.addHandler(stdout_handler)
+  
+#Setting the threshold of logger to INFO 
+logger.setLevel(logging.INFO) 
+
+# Start the browser and login with standard_user
+def login (driver,user, password):
+    logger.info("Logging in with '%s' with password '%s'", user, password)	
+    driver.find_element_by_id('user-name').send_keys(user)
+    driver.find_element_by_id('password').send_keys(password)
+    driver.find_element_by_id('login-button').click()
+    logger.info ("Test login success")
+
+def add_to_cart(item_title, button):
+    logger.info("Adding '%s' to cart",item_title)
+    button.click()
+
+def remove_from_cart(item_title, button):
+    logger.info("Removing '%s' from cart", item_title)
+    button.click()
+
+def main():
+    logger.info("Starting the browser")
+    options = ChromeOptions()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
+    logger.info("Browser started successfully. Navigating to the demo page to login")
     driver.get("https://www.saucedemo.com/")
-    driver.find_element(By.ID, "user-name").send_keys(username)
-    driver.find_element(By.ID, "password").send_keys(password)
-    driver.find_element(By.ID, "login-button").click()
-    WebDriverWait(driver, 10).until(EC.url_to_be("https://www.saucedemo.com/inventory.html"))
-    if driver.current_url == "https://www.saucedemo.com/inventory.html":
-        print("Login successful")
-        return True
-    else:
-        print("Login failed")
-        return False
 
-def add_products_to_cart(driver):
-    print("Adding products to cart")
-    products = driver.find_elements(By.CSS_SELECTOR, ".inventory_item")
-    for product in products:
-        product_name = product.find_element(By.CSS_SELECTOR, ".inventory_item_name").text
-        print(f"Adding '{product_name}' to cart")
-        product.find_element(By.CSS_SELECTOR, "button.btn_primary.btn_inventory").click()
+    login(driver, 'standard_user', 'secret_sauce')
 
-def remove_products_from_cart(driver):
-    print("Removing products from cart")
-    driver.find_element(By.CSS_SELECTOR, ".shopping_cart_link").click()
-    products = driver.find_elements(By.CSS_SELECTOR, ".cart_item")
-    for product in products:
-        product_name = product.find_element(By.CSS_SELECTOR, ".inventory_item_name").text
-        print(f"Removing '{product_name}' from cart")
-        product.find_element(By.CSS_SELECTOR, "button.cart_button").click()
+    # Get all inventory items
+    inventory_items = driver.find_elements(By.CLASS_NAME, "inventory_item")
 
-# Create the driver with the Chrome WebDriver path
-driver = webdriver.Chrome("C:\\Users\\CHIN086\\Downloads\\chromedriver_win32\\chromedriver.exe")
+    # Add all items
+    for item in inventory_items:
+        title = item.find_element(By.CLASS_NAME, "inventory_item_name").text
+        button = item.find_element(
+            By.CSS_SELECTOR, "button[class='btn_primary btn_inventory']"
+        )
+        add_to_cart(title, button)
 
-# Execute the test suite
-try:
-    username = "standard_user"  # Change to desired username
-    password = "secret_sauce"   # Change to desired password
+    # Go to basket
+    cart_button = driver.find_element(
+        By.CSS_SELECTOR, "a[class='shopping_cart_link fa-layers fa-fw']"
+    )
+    cart_button.click()
+    
+    # Get items in basket
+    basket = driver.find_elements(By.CLASS_NAME, "cart_item")
 
-    if login(driver, username, password):
-        add_products_to_cart(driver)
-        remove_products_from_cart(driver)
-finally:
-    # Quit the driver
-    driver.quit()
+    # Remove items
+    for item in basket:
+        title = item.find_element(By.CLASS_NAME, "inventory_item_name").text
+        button = item.find_element(
+            By.CSS_SELECTOR, "button[class='btn_secondary cart_button']"
+        )
+        remove_from_cart(title, button)
 
-
-
+if __name__ == "__main__":
+    main()

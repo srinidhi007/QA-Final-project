@@ -199,10 +199,13 @@ stages:
                 wget "https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.3.tgz"
                 tar -xf apache-jmeter-5.4.3.tgz
                 unzip -o $(Build.BuildId)-perftests.zip
-                ./apache-jmeter-5.4.3/bin/jmeter -n -t ./automatedtesting/jmeter/Stress_test.jmx -l ./automatedtesting/jmeter/stress_test_result.csv -e -o ./automatedtesting/jmeter/stress_test_html_report/ -j ./automatedtesting/jmeter/jmeter_stress_test.log
-                
+                ./apache-jmeter-5.4.3/bin/jmeter -n -t ./automatedtesting/jmeter/Stress_test.jmx -l ./automatedtesting/jmeter/stress_test_result.csv -e -o ./automatedtesting/jmeter/stress_test_html_report/ -j ./automatedtesting/jmeter/jmeter_stress_test.log  
               workingDirectory: $(Pipeline.Workspace)/drop-perftests            # ToDo: Use the artifact name from the task above
               # cat jmeter.log  # ToDo: Write your commands
+          #- task: PublishPipelineArtifact@1
+          #  inputs:
+          #    targetPath: '$(Pipeline.Workspace)/drop-perftests/automatedtesting/jmeter/jmeter_stress_test.log'
+          #    artifact: 'JMeterLogs'          
   #--------------------------------------------#  
   # Selenium | Functional UI Tests #
   # ToDo: 
