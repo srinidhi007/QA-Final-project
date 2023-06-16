@@ -207,7 +207,7 @@ stages:
           #    targetPath: '$(Pipeline.Workspace)/drop-perftests/automatedtesting/jmeter/jmeter_stress_test.log'
           #    artifact: 'JMeterLogs'          
   #--------------------------------------------#  
-  # Selenium | Functional UI Tests #
+  # Selenium | Functional UI Tests ##S
   # ToDo: 
   - deployment: VMDeploy
     displayName: Selenium Tests
