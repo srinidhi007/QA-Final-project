@@ -196,8 +196,8 @@ stages:
           - task: CmdLine@2
             inputs:
               script: |
-                wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
-                tar -xf apache-jmeter-5.2.1.tgz
+                wget "https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.3.tgz"
+                tar -xf apache-jmeter-5.4.3.tgz
                 unzip -o $(Build.BuildId)-perftests.zip
                 jmeter -n -t ./automatedtesting/jmeter/Stress_test.jmx -l ./automatedtesting/jmeter/stress_test_result.csv -e -o ./automatedtesting/jmeter/stress_test_html_report/ -j ./automatedtesting/jmeter/jmeter_stress_test.log
                 
