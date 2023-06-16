@@ -5,7 +5,7 @@ trigger:
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
-  azureServiceConnectionId: '97f0030f-acb4-493d-9d89-534a7c4ce538'
+  azureServiceConnectionId: '(7e85fec4-83b3-4c93-ba22-d3451c71e552)-1966'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
   # Environment name
