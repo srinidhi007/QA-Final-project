@@ -187,7 +187,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: '7e85fec4-83b3-4c93-ba22-d3451c71e552' # ToDo
+              azureSubscription: $(azureServiceConnectionId) # ToDo
               appName: 'sriapplicationqa007-AppService'  # ToDo
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip       # ToDo: Use the published zip artifact. 
